@@ -1,11 +1,17 @@
 ## importieren
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+import tensorflow.contrib.slim as slim
+
+
+
 mnist = input_data.read_data_sets ("MNIST_data/", one_hot=True)
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1) #normalverteilung
     return tf.Variable(initial)
+    
+initializer = tf.truncated_normal_initializer(stddev=0.1)
 
 def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
@@ -26,14 +32,20 @@ with tf.name_scope('modelc'):
     
     x_image = tf.reshape(x, [-1, 28, 28, 1])
     
-    W_conv1 = weight_variable([5, 5, 1, 32]) # 5 x 5 Bilder: 32 Neuronen gucken auf die Bilder
-    b_conv1 = bias_variable([32])
+    gen1 = slim.convolution2d_transpose( \
+        x_image, num_outputs=32, kernel_size=[5, 5], stride=[1, 1], \
+        padding="SAME", normalizer_fn=slim.batch_norm, \
+        activation_fn=tf.nn.relu, scope='g_conv1', weights_initializer=initializer)    
     
-    h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+    
+    #W_conv1 = weight_variable([5, 5, 1, 32]) # 5 x 5 Bilder: 32 Neuronen gucken auf die Bilder
+    #b_conv1 = bias_variable([32])
+    
+    #h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
     
     
     #layer pool1
-    h_pool1 = max_pool_2x2(h_conv1)
+    h_pool1 = max_pool_2x2(gen1)
     # layer conv 2
     
     W_conv2 = weight_variable([5, 5, 32, 64]) # 32 Features wegen oben (5. 5. 32 Eingaben)  64 Features
