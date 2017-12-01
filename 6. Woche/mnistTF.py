@@ -1,15 +1,30 @@
 ## importieren
-
+import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets ("MNIST_data/", one_hot=True)
 
-import tensorflow as tf
+def weight_variable(shape):
+    initial = tf.truncated_normal(shape, stddev=0.1) #normalverteilung
+    return tf.Variable(initial)
+
+def bias_variable(shape):
+    initial = tf.constant(0.1, shape=shape)
+    return tf.Variable(initial)
+
+
 
 with tf.name_scope('model'):
     x = tf.placeholder(tf.float32, [None, 784])
-    W = tf.Variable(tf.zeros([784, 10]))
-    b = tf.Variable(tf.zeros([10]))
-    y = tf.nn.softmax(tf.matmul(x, W) + b)
+    
+    W1 = weight_variable([784, 100])
+    b1 = bias_variable([100])
+    y1 = tf.nn.relu(tf.matmul(x, W1) + b1)
+
+    W2 = weight_variable([100, 10])
+    b2 = bias_variable([10])
+    y2 = tf.nn.softmax(tf.matmul(y1, W2) + b2)
+    
+    y = y2
 
 with tf.name_scope('train'):
     y_ = tf.placeholder(tf.float32, [None, 10])
@@ -19,8 +34,8 @@ with tf.name_scope('train'):
 with tf.Session() as session:
     init = tf.global_variables_initializer()
     session.run(init)
-    for i in range(100):
-        batch_xs, batch_ys = mnist.train.next_batch(100)
+    for i in range(600):
+        batch_xs, batch_ys = mnist.train.next_batch(1000) #zufaellige Reihenfolge
         session.run(train_step, feed_dict= {x: batch_xs, y_: batch_ys })
     
     #Test
