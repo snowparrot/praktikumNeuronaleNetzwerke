@@ -44,10 +44,38 @@ def discriminator(x, D_W1, D_W2, D_b1, D_b2):
     D_h1 = tf.nn.relu(tf.matmul(x, D_W1) + D_b1)
     out = tf.matmul(D_h1, D_W2) + D_b2
     return out
+    
+    
+def conv2d(x, W):
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+    
+def max_pool_2x2(x):
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+    
+def weight_variable(shape):
+    initial = tf.truncated_normal(shape, stddev=0.1) #normalverteilung
+    return tf.Variable(initial)
 
-
+def bias_variable(shape):
+    initial = tf.constant(0.1, shape=shape)
+    return tf.Variable(initial)
+    
 
 with tf.name_scope('model1'):
+
+    # generator variabeln
+    
+    z = tf.placeholder(tf.float32, shape=[None, z_dim])
+
+    G_W1 = tf.Variable(xavier_init([z_dim, h_dim]))
+    G_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
+
+    G_W2 = tf.Variable(xavier_init([h_dim, X_dim]))
+    G_b2 = tf.Variable(tf.zeros(shape=[X_dim]))
+
+    theta_G = [G_W1, G_W2, G_b1, G_b2]    
+
+    # discriminator variabeln
 
     X = tf.placeholder(tf.float32, shape=[None, X_dim])
 
@@ -58,17 +86,6 @@ with tf.name_scope('model1'):
     D_b2 = tf.Variable(tf.zeros(shape=[1]))
 
     theta_D = [D_W1, D_W2, D_b1, D_b2]
-
-
-    z = tf.placeholder(tf.float32, shape=[None, z_dim])
-
-    G_W1 = tf.Variable(xavier_init([z_dim, h_dim]))
-    G_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
-
-    G_W2 = tf.Variable(xavier_init([h_dim, X_dim]))
-    G_b2 = tf.Variable(tf.zeros(shape=[X_dim]))
-
-    theta_G = [G_W1, G_W2, G_b1, G_b2]
     
     #generator 
 

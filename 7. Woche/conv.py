@@ -20,11 +20,11 @@ def max_pool_2x2(x):
 
 
 with tf.name_scope('modelc'):
-    x = tf.placeholder(tf.float32, [None, 784])
+    X = tf.placeholder(tf.float32, [None, 784])
     
     #layer conv 1
     
-    x_image = tf.reshape(x, [-1, 28, 28, 1])
+    x_image = tf.reshape(X, [-1, 28, 28, 1])
     
     W_conv1 = weight_variable([5, 5, 1, 32]) # 5 x 5 Bilder: 32 Neuronen gucken auf die Bilder
     b_conv1 = bias_variable([32])
