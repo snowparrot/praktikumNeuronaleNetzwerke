@@ -32,7 +32,7 @@ with tf.name_scope('modelc'):
     
     x_image = tf.reshape(x, [-1, 28, 28, 1])
     
-    gen1 = slim.convolution2d_transpose( \
+    gen1 = slim.convolution2d( \
         x_image, num_outputs=32, kernel_size=[5, 5], stride=[1, 1], \
         padding="SAME", normalizer_fn=slim.batch_norm, \
         activation_fn=tf.nn.relu, scope='g_conv1', weights_initializer=initializer)    
@@ -46,6 +46,11 @@ with tf.name_scope('modelc'):
     
     #layer pool1
     h_pool1 = max_pool_2x2(gen1)
+    
+    #h_pool1 = slim.max_pool2d(gen1, kernel_size = [1, 2, 2, 1], stride = [1, 2, 2, 1], padding='SAME')
+    
+    
+    
     # layer conv 2
     
     W_conv2 = weight_variable([5, 5, 32, 64]) # 32 Features wegen oben (5. 5. 32 Eingaben)  64 Features
